@@ -1,0 +1,39 @@
+name: CI
+on: [push, pull_request]
+jobs:
+  test:
+    strategy:
+      fail-fast: false
+      matrix:
+        os: [ubuntu-latest, windows-latest, macos-latest]
+    runs-on: ${{ matrix.os }}
+    defaults:
+      run:
+        shell: bash
+    steps:
+      - uses: actions/checkout@v4
+      - uses: JohnnyMorganz/stylua-action@v5
+        with:
+          token: ${{ secrets.GITHUB_TOKEN }}
+          version: v2.6.0
+          args: --check src spec bin
+      - uses: ilammy/msvc-dev-cmd@v1
+      - uses: luarocks/gh-actions-lua@v14
+        with:
+          luaVersion: "5.4"
+      - uses: luarocks/gh-actions-luarocks@v7
+      - name: Keep Git's link.exe from hiding the MSVC linker
+        if: runner.os == 'Windows'
+        run: rm -f /usr/bin/link.exe /usr/bin/link
+      - run: luarocks install busted
+      - run: luarocks install luacheck
+      - name: Put the LuaRocks tools on PATH as shell scripts
+        if: runner.os == 'Windows'
+        run: |
+          bin="$(cygpath "$APPDATA")/luarocks/bin"
+          for tool in busted luacheck; do
+            printf '#!/bin/sh\nexec "%s/%s.bat" "$@"\n' "$bin" "$tool" > "$bin/$tool"
+          done
+          echo "$bin" >> "$GITHUB_PATH"
+      - run: luacheck src spec bin
+      - run: busted
