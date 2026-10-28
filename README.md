@@ -58,6 +58,7 @@ Options can appear before or after file operands. `--hex` is a flag. `--format F
 - `dump [--format F] [--hex] [--skip N] [--limit N] FILE` prints decoded bytes as a 16-byte-per-line hex dump. The default skip is 0 and the default limit is 256 bytes; skip must be non-negative and limit must be at least 1.
 - `check [--format F] [--hex] FILE...` checks every operand, continuing after read or decoding problems. It reports each stream's problems and summarizes the number of successfully read files and problems.
 - `codes LENGTH...` builds a canonical Huffman code from lengths 0 through 15. A length may be written as `L` or `LxN` for N repetitions (1–288); at most 288 lengths are accepted.
+- `codes SYMBOL:LENGTH...` builds the code from the symbol lists that `tree` prints. An operand is `S:L` (symbol S has length L) or `A-B:L` (symbols A through B have length L); symbols 0 through 287 and lengths 0 through 15 are accepted, unlisted symbols get length 0, and a symbol may be listed once. The first operand chooses the form: if it contains a colon, every operand must use this form.
 
 A position is written `BYTE.BIT` and is zero-based from the beginning of the file. For example, `1.2` means bit 2 (least-significant bit is bit 0) of byte 1, and `9.0` means byte 9.
 
@@ -147,6 +148,16 @@ $ flatelens codes 3 3 3 3 3 2 4 4
 6: 4 1110
 7: 4 1111
 status: complete (16/16)
+~~~
+
+The symbol lists printed by `tree` can be used directly:
+
+~~~text
+$ flatelens codes 9:1 10-11:2
+9: 1 0
+10: 2 10
+11: 2 11
+status: complete (4/4)
 ~~~
 
 ## Problem codes
