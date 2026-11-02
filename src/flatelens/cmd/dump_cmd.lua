@@ -8,7 +8,9 @@ function DumpCmd.run(report, settings, out)
     return
   end
 
-  out:write_out(Text.lines(Hexdump.render(report.out, settings.skip, settings.limit)))
+  out:write_out(
+    Text.lines(Hexdump.render(report.out, settings.skip, settings.limit, settings.width))
+  )
 end
 
 return DumpCmd

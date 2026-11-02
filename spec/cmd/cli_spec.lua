@@ -35,7 +35,7 @@ describe("flatelens.cmd.cli", function()
     local usage = "usage: flatelens info [--format F] [--hex] FILE\n"
       .. "       flatelens blocks [--format F] [--hex] FILE\n"
       .. "       flatelens tree [--format F] [--hex] [--block N] FILE\n"
-      .. "       flatelens dump [--format F] [--hex] [--skip N] [--limit N] FILE\n"
+      .. "       flatelens dump [--format F] [--hex] [--skip N] [--limit N] [--width N] FILE\n"
       .. "       flatelens check [--format F] [--hex] FILE...\n"
       .. "       flatelens codes LENGTH...\n"
     local cases = {

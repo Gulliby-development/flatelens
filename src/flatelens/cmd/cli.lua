@@ -14,7 +14,7 @@ local usage = table.concat({
   "usage: flatelens info [--format F] [--hex] FILE",
   "       flatelens blocks [--format F] [--hex] FILE",
   "       flatelens tree [--format F] [--hex] [--block N] FILE",
-  "       flatelens dump [--format F] [--hex] [--skip N] [--limit N] FILE",
+  "       flatelens dump [--format F] [--hex] [--skip N] [--limit N] [--width N] FILE",
   "       flatelens check [--format F] [--hex] FILE...",
   "       flatelens codes LENGTH...",
   "",
@@ -24,7 +24,7 @@ local option_specs = {
   info = { format = "value", hex = "flag" },
   blocks = { format = "value", hex = "flag" },
   tree = { format = "value", hex = "flag", block = "value" },
-  dump = { format = "value", hex = "flag", skip = "value", limit = "value" },
+  dump = { format = "value", hex = "flag", skip = "value", limit = "value", width = "value" },
   check = { format = "value", hex = "flag" },
   codes = {},
 }
@@ -62,6 +62,7 @@ local function parse_settings(command, args)
   elseif command == "dump" then
     settings.skip = Options.number(parsed, "skip", 0, 0)
     settings.limit = Options.number(parsed, "limit", 256, 1)
+    settings.width = Options.number(parsed, "width", 16, 1, 64)
   end
 
   if command == "info" or command == "blocks" or command == "tree" or command == "dump" then

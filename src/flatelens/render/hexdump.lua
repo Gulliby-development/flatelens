@@ -4,7 +4,9 @@ local Hexdump = {}
 
 -- Render bytes from a zero-based skip offset, selecting at most limit bytes.
 -- Returns fresh output lines with absolute offsets and does not perform I/O.
-function Hexdump.render(bytes, skip, limit)
+-- Each row holds width bytes (default 16).
+function Hexdump.render(bytes, skip, limit, width)
+  width = width or 16
   local lines = {}
   local available = #bytes - skip
 
@@ -17,7 +19,7 @@ function Hexdump.render(bytes, skip, limit)
   local stop = skip + selected
 
   while position < stop do
-    local row_end = math.min(position + 16, stop)
+    local row_end = math.min(position + width, stop)
     local hex_parts = {}
     local ascii_parts = {}
 
@@ -28,7 +30,7 @@ function Hexdump.render(bytes, skip, limit)
     end
 
     local hex_field = table.concat(hex_parts, " ")
-    local padding = string.rep(" ", 47 - #hex_field)
+    local padding = string.rep(" ", width * 3 - 1 - #hex_field)
     lines[#lines + 1] = Text.hex(position, 8)
       .. "  "
       .. hex_field
