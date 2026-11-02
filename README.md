@@ -43,7 +43,7 @@ The examples use a POSIX-style shell with `printf` to create hex fixtures. On Wi
 usage: flatelens info [--format F] [--hex] FILE
        flatelens blocks [--format F] [--hex] FILE
        flatelens tree [--format F] [--hex] [--block N] FILE
-       flatelens dump [--format F] [--hex] [--skip N] [--limit N] FILE
+       flatelens dump [--format F] [--hex] [--skip N] [--limit N] [--width N] FILE
        flatelens check [--format F] [--hex] FILE...
        flatelens codes LENGTH...
 ~~~
@@ -55,7 +55,7 @@ Options can appear before or after file operands. `--hex` is a flag. `--format F
 - `info [--format F] [--hex] FILE` reports the format, container metadata, block summary, compressed and decoded sizes, ratio, checksum status, and trailing bytes when present.
 - `blocks [--format F] [--hex] FILE` prints each decoded block's kind, final flag, positions, bit count, output count, literals, and matches.
 - `tree [--format F] [--hex] [--block N] FILE` summarizes each dynamic block's transmitted code-length lengths, literal/length and distance lengths, and tree statistics. `--block N` selects one 1-based block.
-- `dump [--format F] [--hex] [--skip N] [--limit N] FILE` prints decoded bytes as a 16-byte-per-line hex dump. The default skip is 0 and the default limit is 256 bytes; skip must be non-negative and limit must be at least 1.
+- `dump [--format F] [--hex] [--skip N] [--limit N] [--width N] FILE` prints decoded bytes as a hex dump of N bytes per line. The default width is 16 and a width must be from 1 to 64; the hex field of a short last line is padded to the width of a full line. The default skip is 0 and the default limit is 256 bytes; skip must be non-negative and limit must be at least 1.
 - `check [--format F] [--hex] FILE...` checks every operand, continuing after read or decoding problems. It reports each stream's problems and summarizes the number of successfully read files and problems.
 - `codes LENGTH...` builds a canonical Huffman code from lengths 0 through 15. A length may be written as `L` or `LxN` for N repetitions (1–288); at most 288 lengths are accepted.
 - `codes SYMBOL:LENGTH...` builds the code from the symbol lists that `tree` prints. An operand is `S:L` (symbol S has length L) or `A-B:L` (symbols A through B have length L); symbols 0 through 287 and lengths 0 through 15 are accepted, unlisted symbols get length 0, and a symbol may be listed once. The first operand chooses the form: if it contains a colon, every operand must use this form.
@@ -133,6 +133,16 @@ $ flatelens dump --hex --skip 4 --limit 40 text.hex
 00000014  69 6d 65 73 2c 20 69 74 20 77 61 73 20 74 68 65  |imes, it was the|
 00000024  20 77 6f 72 73 74 20 6f                          | worst o|
 ... 94 bytes more
+~~~
+
+`--width` changes the line length; the offsets and the `... N bytes more` line follow the lines as before:
+
+~~~text
+$ flatelens dump --hex --skip 4 --limit 20 --width 8 text.hex
+00000004  61 73 20 74 68 65 20 62  |as the b|
+0000000c  65 73 74 20 6f 66 20 74  |est of t|
+00000014  69 6d 65 73              |imes|
+... 114 bytes more
 ~~~
 
 The RFC canonical-code example uses no input file:

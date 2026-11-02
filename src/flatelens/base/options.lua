@@ -78,7 +78,7 @@ function Options.parse(args, spec)
   }
 end
 
-function Options.number(parsed, name, default, minimum)
+function Options.number(parsed, name, default, minimum, maximum)
   local value = parsed.values[name]
   if value == nil then
     return default
@@ -90,7 +90,7 @@ function Options.number(parsed, name, default, minimum)
   end
 
   local number = tonumber(value)
-  if number < minimum then
+  if number < minimum or (maximum ~= nil and number > maximum) then
     Failure.raise(2, "flatelens: invalid --" .. name .. " value: " .. spelling)
   end
 
